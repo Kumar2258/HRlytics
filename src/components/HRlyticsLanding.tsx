@@ -180,7 +180,7 @@ const HRlyticsLanding: React.FC = () => {
         </header>
 
         <main className="pt-20">
-          {activeSection === 'home' && <HomeSection openModal={() => setModalType('signin')} />}
+          {activeSection === 'home' && <HomeSection openModal={() => setModalType('signup')} />}
           {activeSection === 'features' && <FeaturesSection />}
           {activeSection === 'about' && <AboutSection />}
           {activeSection === 'pricing' && <PricingSection openModal={() => setModalType('signup')} />}
@@ -193,7 +193,7 @@ const HRlyticsLanding: React.FC = () => {
       {/* Custom Modal Implementation */}
       {modalType && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto"
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 p-4 overflow-y-auto"
           onClick={() => setModalType(null)}
         >
           <motion.div
@@ -211,17 +211,19 @@ const HRlyticsLanding: React.FC = () => {
               <X className="w-6 h-6" />
             </button>
 
-            <div className="grid md:grid-cols-2 gap-8 p-8 max-h-[80vh] overflow-hidden">
+            <div className="grid md:grid-cols-2 gap-8 p-8">
               {/* Left side - Form */}
-              <div className="overflow-y-auto pr-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full">
-                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 sticky top-0 bg-white dark:bg-gray-800 py-4 z-[5]">
-                  {modalType === 'signin' ? 'Sign In' : 'Create Account'}
-                </h2>
-                <p className="text-gray-600 dark:text-gray-300 mb-8">
-                  {modalType === 'signin' ? 'Access your dashboard' : 'Join HRlytics platform'}
-                </p>
+              <div className="max-h-[calc(100vh-8rem)] overflow-y-auto pr-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full">
+                <div className="sticky top-0 bg-white dark:bg-gray-800 py-4 z-[5] mb-6">
+                  <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    {modalType === 'signin' ? 'Sign In' : 'Create Account'}
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-300 mt-2">
+                    {modalType === 'signin' ? 'Access your dashboard' : 'Join HRlytics platform'}
+                  </p>
+                </div>
 
-                <form onSubmit={handleLogin} className="space-y-6 pb-6">
+                <form onSubmit={handleLogin} className="space-y-6">
                   {/* Username field */}
                   <motion.div
                     initial={{ opacity: 0 }}
