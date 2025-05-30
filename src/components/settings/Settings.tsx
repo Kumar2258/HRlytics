@@ -1,232 +1,241 @@
 import React, { useState } from 'react';
-import { Settings as SettingsIcon, Bell, Shield, User, Globe, Moon, Mail } from 'lucide-react';
-import { useTheme } from '../../context/ThemeContext';
+import { motion } from 'framer-motion';
+import {
+  Bell,
+  Mail,
+  Lock,
+  Globe,
+  Monitor,
+  Shield,
+  Database,
+  AlertCircle,
+  ToggleLeft,
+  CheckSquare,
+  Save,
+  RefreshCw
+} from 'lucide-react';
+import { useUser } from '../../context/UserContext';
 
-interface NotificationSettings {
-  email: boolean;
-  push: boolean;
-  performance: boolean;
-  security: boolean;
+interface SettingsSectionProps {
+  title: string;
+  icon: React.ReactNode;
+  children: React.ReactNode;
 }
 
-interface PrivacySettings {
-  shareData: boolean;
-  analytics: boolean;
-  thirdParty: boolean;
+const SettingsSection: React.FC<SettingsSectionProps> = ({ title, icon, children }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700"
+  >
+    <div className="flex items-center gap-3 mb-6">
+      <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+        {icon}
+      </div>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+        {title}
+      </h3>
+    </div>
+    <div className="space-y-4">
+      {children}
+    </div>
+  </motion.div>
+);
+
+interface ToggleSettingProps {
+  label: string;
+  description: string;
+  enabled: boolean;
+  onChange: (value: boolean) => void;
 }
+
+const ToggleSetting: React.FC<ToggleSettingProps> = ({ label, description, enabled, onChange }) => (
+  <div className="flex items-center justify-between">
+    <div>
+      <p className="text-sm font-medium text-gray-900 dark:text-white">{label}</p>
+      <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
+    </div>
+    <motion.button
+      whileTap={{ scale: 0.95 }}
+      onClick={() => onChange(!enabled)}
+      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+        enabled ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'
+      }`}
+    >
+      <motion.span
+        layout
+        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+          enabled ? 'translate-x-6' : 'translate-x-1'
+        }`}
+      />
+    </motion.button>
+  </div>
+);
 
 const Settings: React.FC = () => {
-  const { darkMode, toggleDarkMode } = useTheme();
-  const [notifications, setNotifications] = useState<NotificationSettings>({
+  const { userInfo } = useUser();
+  const [settings, setSettings] = useState({
+    notifications: {
     email: true,
     push: true,
-    performance: true,
-    security: true
-  });
-  const [privacy, setPrivacy] = useState<PrivacySettings>({
-    shareData: true,
+      updates: false,
+      newsletter: true
+    },
+    privacy: {
+      profileVisibility: true,
+      activityStatus: true,
+      dataSharing: false
+    },
+    system: {
+      autoUpdate: true,
+      betaFeatures: false,
     analytics: true,
-    thirdParty: false
+      backups: true
+    }
   });
 
-  const handleNotificationChange = (key: keyof NotificationSettings) => {
-    setNotifications(prev => ({
+  const handleSettingChange = (category: keyof typeof settings, setting: string, value: boolean) => {
+    setSettings(prev => ({
       ...prev,
-      [key]: !prev[key]
+      [category]: {
+        ...prev[category],
+        [setting]: value
+      }
     }));
   };
 
-  const handlePrivacyChange = (key: keyof PrivacySettings) => {
-    setPrivacy(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }));
+  const handleSaveSettings = () => {
+    // Here you would typically save the settings to your backend
+    console.log('Saving settings:', settings);
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="flex items-center gap-2 mb-8">
-        <SettingsIcon className="w-8 h-8 text-gray-700 dark:text-gray-300" />
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Settings</h1>
-      </div>
-
-      <div className="space-y-8">
-        {/* Theme Settings */}
-        <section className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <Moon className="w-5 h-5" />
-            Appearance
+    <div className="p-6 max-w-6xl mx-auto space-y-8">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex justify-between items-center bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700"
+      >
+        <div>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            Settings
           </h2>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-900 dark:text-white font-medium">Dark Mode</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Toggle between light and dark theme
+          <p className="text-gray-500 dark:text-gray-400 mt-1">
+            Manage your preferences and account settings
               </p>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={darkMode}
-                onChange={toggleDarkMode}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-            </label>
-          </div>
-        </section>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleSaveSettings}
+          className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg text-sm font-medium flex items-center gap-2"
+        >
+          <Save className="w-4 h-4" />
+          Save Changes
+        </motion.button>
+      </motion.div>
 
-        {/* Notification Settings */}
-        <section className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <Bell className="w-5 h-5" />
-            Notifications
-          </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Notifications */}
+        <SettingsSection title="Notifications" icon={<Bell className="w-5 h-5 text-blue-600 dark:text-blue-400" />}>
+          <ToggleSetting
+            label="Email Notifications"
+            description="Receive email updates about your account activity"
+            enabled={settings.notifications.email}
+            onChange={(value) => handleSettingChange('notifications', 'email', value)}
+          />
+          <ToggleSetting
+            label="Push Notifications"
+            description="Get push notifications for important updates"
+            enabled={settings.notifications.push}
+            onChange={(value) => handleSettingChange('notifications', 'push', value)}
+          />
+          <ToggleSetting
+            label="Product Updates"
+            description="Be the first to know about new features"
+            enabled={settings.notifications.updates}
+            onChange={(value) => handleSettingChange('notifications', 'updates', value)}
+          />
+          <ToggleSetting
+            label="Newsletter"
+            description="Receive our monthly newsletter"
+            enabled={settings.notifications.newsletter}
+            onChange={(value) => handleSettingChange('notifications', 'newsletter', value)}
+          />
+        </SettingsSection>
+
+        {/* Privacy */}
+        <SettingsSection title="Privacy & Security" icon={<Shield className="w-5 h-5 text-blue-600 dark:text-blue-400" />}>
+          <ToggleSetting
+            label="Profile Visibility"
+            description="Make your profile visible to other users"
+            enabled={settings.privacy.profileVisibility}
+            onChange={(value) => handleSettingChange('privacy', 'profileVisibility', value)}
+          />
+          <ToggleSetting
+            label="Activity Status"
+            description="Show when you're active on the platform"
+            enabled={settings.privacy.activityStatus}
+            onChange={(value) => handleSettingChange('privacy', 'activityStatus', value)}
+          />
+          <ToggleSetting
+            label="Data Sharing"
+            description="Share usage data to improve our services"
+            enabled={settings.privacy.dataSharing}
+            onChange={(value) => handleSettingChange('privacy', 'dataSharing', value)}
+          />
+        </SettingsSection>
+
+        {/* System */}
+        <SettingsSection title="System" icon={<Monitor className="w-5 h-5 text-blue-600 dark:text-blue-400" />}>
+          <ToggleSetting
+            label="Automatic Updates"
+            description="Keep the application up to date automatically"
+            enabled={settings.system.autoUpdate}
+            onChange={(value) => handleSettingChange('system', 'autoUpdate', value)}
+          />
+          <ToggleSetting
+            label="Beta Features"
+            description="Get early access to new features"
+            enabled={settings.system.betaFeatures}
+            onChange={(value) => handleSettingChange('system', 'betaFeatures', value)}
+          />
+          <ToggleSetting
+            label="Usage Analytics"
+            description="Help us improve by sharing analytics data"
+            enabled={settings.system.analytics}
+            onChange={(value) => handleSettingChange('system', 'analytics', value)}
+          />
+          <ToggleSetting
+            label="Automatic Backups"
+            description="Regularly backup your data"
+            enabled={settings.system.backups}
+            onChange={(value) => handleSettingChange('system', 'backups', value)}
+          />
+        </SettingsSection>
+
+        {/* Account Info */}
+        <SettingsSection title="Account Information" icon={<Database className="w-5 h-5 text-blue-600 dark:text-blue-400" />}>
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-900 dark:text-white font-medium">Email Notifications</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Receive email updates about your account
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={notifications.email}
-                  onChange={() => handleNotificationChange('email')}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-              </label>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Name</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-white">{userInfo.name}</p>
             </div>
-
-            <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-900 dark:text-white font-medium">Push Notifications</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Receive push notifications in your browser
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={notifications.push}
-                  onChange={() => handleNotificationChange('push')}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-              </label>
-            </div>
-          </div>
-        </section>
-
-        {/* Privacy Settings */}
-        <section className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <Shield className="w-5 h-5" />
-            Privacy
-          </h2>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-900 dark:text-white font-medium">Data Sharing</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Allow sharing of anonymized data for improvements
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={privacy.shareData}
-                  onChange={() => handlePrivacyChange('shareData')}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-              </label>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-900 dark:text-white font-medium">Analytics</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Help improve HRlytics with usage data
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={privacy.analytics}
-                  onChange={() => handlePrivacyChange('analytics')}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-              </label>
-            </div>
-          </div>
-        </section>
-
-        {/* Account Settings */}
-        <section className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <User className="w-5 h-5" />
-            Account
-          </h2>
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  placeholder="your@email.com"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Password
-                </label>
-                <button className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
-                  Change Password
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Language Settings */}
-        <section className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <Globe className="w-5 h-5" />
-            Language & Region
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Language
-              </label>
-              <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                <option value="en">English</option>
-                <option value="es">Spanish</option>
-                <option value="fr">French</option>
-                <option value="de">German</option>
-              </select>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Email</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-white">{userInfo.email}</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Time Zone
-              </label>
-              <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                <option value="utc">UTC</option>
-                <option value="est">Eastern Time</option>
-                <option value="pst">Pacific Time</option>
-                <option value="ist">India Standard Time</option>
-              </select>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Role</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-white">{userInfo.role}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Department</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-white">{userInfo.department}</p>
             </div>
           </div>
-        </section>
+        </SettingsSection>
       </div>
     </div>
   );

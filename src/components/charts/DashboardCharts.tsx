@@ -13,6 +13,7 @@ import {
   ChartData,
 } from 'chart.js';
 import { Line, Bar, Pie, Doughnut } from 'react-chartjs-2';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // Register ChartJS components
 ChartJS.register(
@@ -31,59 +32,128 @@ interface ChartProps {
   darkMode?: boolean;
 }
 
-export const PerformanceTrendChart: React.FC<ChartProps> = ({ darkMode }) => {
+const chartAnimation = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut"
+    }
+  }
+};
+
+const commonOptions = (darkMode: boolean) => ({
+  responsive: true,
+  animation: {
+    duration: 2000,
+    easing: 'easeInOutQuart',
+  },
+  plugins: {
+    legend: {
+      position: 'top' as const,
+      labels: {
+        color: darkMode ? '#fff' : '#000',
+        font: {
+          size: 12,
+          weight: '500' as const,
+        },
+        padding: 20,
+        usePointStyle: true,
+        pointStyle: 'circle',
+      },
+    },
+    tooltip: {
+      backgroundColor: darkMode ? 'rgba(17, 24, 39, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+      titleColor: darkMode ? '#fff' : '#000',
+      bodyColor: darkMode ? '#fff' : '#000',
+      borderColor: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+      borderWidth: 1,
+      padding: 12,
+      cornerRadius: 8,
+      titleFont: {
+        size: 14,
+        weight: '600' as const,
+      },
+      bodyFont: {
+        size: 13,
+      },
+      displayColors: true,
+      boxPadding: 4,
+    },
+  },
+  layout: {
+    padding: {
+      top: 20,
+      right: 20,
+      bottom: 20,
+      left: 20,
+    },
+  },
+});
+
+export const PerformanceTrendChart: React.FC<ChartProps> = ({ darkMode = false }) => {
   const data = {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
     datasets: [
       {
         label: 'Performance Score',
         data: [65, 72, 68, 75, 82, 85],
-        borderColor: '#3b82f6',
+        borderColor: 'rgb(59, 130, 246)',
         backgroundColor: 'rgba(59, 130, 246, 0.5)',
         tension: 0.4,
+        fill: true,
+        pointBackgroundColor: 'rgb(59, 130, 246)',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
       },
     ],
   };
 
   const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top' as const,
-        labels: {
-          color: darkMode ? '#fff' : '#000',
-        },
-      },
-      title: {
-        display: true,
-        text: 'Performance Trends',
-        color: darkMode ? '#fff' : '#000',
-      },
-    },
+    ...commonOptions(darkMode),
     scales: {
       y: {
-        ticks: {
-          color: darkMode ? '#fff' : '#000',
-        },
+        beginAtZero: true,
         grid: {
           color: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+          drawBorder: false,
+        },
+        ticks: {
+          color: darkMode ? '#fff' : '#000',
+          font: { size: 12 },
+          padding: 8,
         },
       },
       x: {
+        grid: {
+          display: false,
+        },
         ticks: {
           color: darkMode ? '#fff' : '#000',
-        },
-        grid: {
-          color: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+          font: { size: 12 },
+          padding: 8,
         },
       },
     },
   };
 
-  return <Line data={data} options={options} />;
+  return (
+    <motion.div
+      variants={chartAnimation}
+      initial="hidden"
+      animate="visible"
+      className="relative"
+    >
+      <Line data={data} options={options} />
+    </motion.div>
+  );
 };
 
-export const DepartmentPerformanceChart: React.FC<ChartProps> = ({ darkMode }) => {
+export const DepartmentPerformanceChart: React.FC<ChartProps> = ({ darkMode = false }) => {
   const data = {
     labels: ['Engineering', 'Sales', 'Marketing', 'HR', 'Finance', 'Operations'],
     datasets: [
@@ -91,56 +161,69 @@ export const DepartmentPerformanceChart: React.FC<ChartProps> = ({ darkMode }) =
         label: 'Performance Score',
         data: [85, 72, 78, 75, 82, 79],
         backgroundColor: [
-          'rgba(59, 130, 246, 0.5)',
-          'rgba(16, 185, 129, 0.5)',
-          'rgba(249, 115, 22, 0.5)',
-          'rgba(236, 72, 153, 0.5)',
-          'rgba(139, 92, 246, 0.5)',
-          'rgba(245, 158, 11, 0.5)',
+          'rgba(59, 130, 246, 0.7)',
+          'rgba(16, 185, 129, 0.7)',
+          'rgba(249, 115, 22, 0.7)',
+          'rgba(236, 72, 153, 0.7)',
+          'rgba(139, 92, 246, 0.7)',
+          'rgba(245, 158, 11, 0.7)',
         ],
+        borderWidth: 2,
+        borderColor: [
+          'rgb(59, 130, 246)',
+          'rgb(16, 185, 129)',
+          'rgb(249, 115, 22)',
+          'rgb(236, 72, 153)',
+          'rgb(139, 92, 246)',
+          'rgb(245, 158, 11)',
+        ],
+        borderRadius: 8,
+        hoverOffset: 4,
       },
     ],
   };
 
   const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top' as const,
-        labels: {
-          color: darkMode ? '#fff' : '#000',
-        },
-      },
-      title: {
-        display: true,
-        text: 'Department Performance',
-        color: darkMode ? '#fff' : '#000',
-      },
-    },
+    ...commonOptions(darkMode),
     scales: {
       y: {
-        ticks: {
-          color: darkMode ? '#fff' : '#000',
-        },
+        beginAtZero: true,
         grid: {
           color: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+          drawBorder: false,
+        },
+        ticks: {
+          color: darkMode ? '#fff' : '#000',
+          font: { size: 12 },
+          padding: 8,
         },
       },
       x: {
+        grid: {
+          display: false,
+        },
         ticks: {
           color: darkMode ? '#fff' : '#000',
-        },
-        grid: {
-          color: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+          font: { size: 12 },
+          padding: 8,
         },
       },
     },
   };
 
-  return <Bar data={data} options={options} />;
+  return (
+    <motion.div
+      variants={chartAnimation}
+      initial="hidden"
+      animate="visible"
+      className="relative"
+    >
+      <Bar data={data} options={options} />
+    </motion.div>
+  );
 };
 
-export const SentimentDistributionChart: React.FC<ChartProps> = ({ darkMode }) => {
+export const SentimentDistributionChart: React.FC<ChartProps> = ({ darkMode = false }) => {
   const data = {
     labels: ['Positive', 'Neutral', 'Negative'],
     datasets: [
@@ -156,32 +239,35 @@ export const SentimentDistributionChart: React.FC<ChartProps> = ({ darkMode }) =
           'rgb(245, 158, 11)',
           'rgb(239, 68, 68)',
         ],
-        borderWidth: 1,
+        borderWidth: 2,
+        hoverOffset: 4,
       },
     ],
   };
 
   const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top' as const,
-        labels: {
-          color: darkMode ? '#fff' : '#000',
-        },
-      },
-      title: {
-        display: true,
-        text: 'Sentiment Distribution',
-        color: darkMode ? '#fff' : '#000',
+    ...commonOptions(darkMode),
+    cutout: '60%',
+    elements: {
+      arc: {
+        borderWidth: 2,
       },
     },
   };
 
-  return <Pie data={data} options={options} />;
+  return (
+    <motion.div
+      variants={chartAnimation}
+      initial="hidden"
+      animate="visible"
+      className="relative"
+    >
+      <Pie data={data} options={options} />
+    </motion.div>
+  );
 };
 
-export const AttritionRiskChart: React.FC<ChartProps> = ({ darkMode }) => {
+export const AttritionRiskChart: React.FC<ChartProps> = ({ darkMode = false }) => {
   const data = {
     labels: ['Low Risk', 'Medium Risk', 'High Risk'],
     datasets: [
@@ -197,27 +283,37 @@ export const AttritionRiskChart: React.FC<ChartProps> = ({ darkMode }) => {
           'rgb(245, 158, 11)',
           'rgb(239, 68, 68)',
         ],
-        borderWidth: 1,
+        borderWidth: 2,
+        hoverOffset: 4,
       },
     ],
   };
 
   const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top' as const,
-        labels: {
-          color: darkMode ? '#fff' : '#000',
-        },
-      },
-      title: {
-        display: true,
-        text: 'Attrition Risk Distribution',
-        color: darkMode ? '#fff' : '#000',
+    ...commonOptions(darkMode),
+    cutout: '75%',
+    elements: {
+      arc: {
+        borderWidth: 2,
       },
     },
   };
 
-  return <Doughnut data={data} options={options} />;
+  return (
+    <motion.div
+      variants={chartAnimation}
+      initial="hidden"
+      animate="visible"
+      className="relative"
+    >
+      <Doughnut data={data} options={options} />
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-3xl font-bold text-green-600 dark:text-green-400">70%</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Low Risk</p>
+        </div>
+      </div>
+    </motion.div>
+  );
+}; 
 }; 
