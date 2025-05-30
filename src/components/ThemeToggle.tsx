@@ -1,22 +1,29 @@
 import React from 'react';
 import { Sun, Moon } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
 
-const ThemeToggle: React.FC = () => {
+interface ThemeToggleProps {
+  className?: string;
+}
+
+const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = '' }) => {
   const { darkMode, toggleDarkMode } = useTheme();
 
   return (
-    <button
+    <motion.button
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
       onClick={toggleDarkMode}
-      className="p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-shadow"
-      aria-label="Toggle theme"
+      className={`p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${className}`}
+      aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
     >
       {darkMode ? (
-        <Sun className="w-6 h-6 text-yellow-500" />
+        <Sun className="w-5 h-5 text-gray-600 dark:text-gray-300" />
       ) : (
-        <Moon className="w-6 h-6 text-gray-700" />
+        <Moon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
       )}
-    </button>
+    </motion.button>
   );
 };
 

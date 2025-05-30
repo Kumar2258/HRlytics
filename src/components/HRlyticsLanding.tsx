@@ -120,6 +120,7 @@ const HRlyticsLanding: React.FC = () => {
             </div>
             
             <div className="hidden md:flex items-center space-x-4">
+              <ThemeToggle className="mr-2" />
               <button 
                 onClick={() => setModalType('signin')}
                 className="px-6 py-2 border-2 border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400 rounded-xl font-semibold hover:bg-blue-600 hover:text-white dark:hover:bg-blue-400 dark:hover:text-gray-900 transition-colors duration-300"
@@ -187,7 +188,6 @@ const HRlyticsLanding: React.FC = () => {
         </main>
 
         <Footer />
-        <ThemeToggle />
       </div>
 
       {/* Custom Modal Implementation */}

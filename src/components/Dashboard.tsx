@@ -22,7 +22,8 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-  User
+  User,
+  PlayCircle
 } from 'lucide-react';
 import DatePicker from './common/DatePicker';
 import Filter from './common/Filter';
@@ -33,6 +34,23 @@ import EmployeeTable from './dashboard/EmployeeTable';
 import ThemeToggle from './ThemeToggle';
 import { useUser } from '../context/UserContext';
 import Chatbot from './Chatbot';
+
+const HRlyticsIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6">
+    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20Z" fill="url(#paint0_linear)"/>
+    <path d="M13 7H11V13H17V11H13V7Z" fill="url(#paint1_linear)"/>
+    <defs>
+      <linearGradient id="paint0_linear" x1="2" y1="12" x2="22" y2="12" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#2563EB"/>
+        <stop offset="1" stopColor="#4F46E5"/>
+      </linearGradient>
+      <linearGradient id="paint1_linear" x1="11" y1="10" x2="17" y2="10" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#2563EB"/>
+        <stop offset="1" stopColor="#4F46E5"/>
+      </linearGradient>
+    </defs>
+  </svg>
+);
 
 const Dashboard: React.FC = () => {
   const location = useLocation();
@@ -112,211 +130,224 @@ const Dashboard: React.FC = () => {
 
   const sidebarVariants = {
     expanded: { 
-      width: '16rem',
+      width: '17.5rem',
       transition: { 
         type: "spring",
-        stiffness: 100,
-        damping: 20
+        stiffness: 200,
+        damping: 25
       }
     },
     collapsed: { 
-      width: '4rem',
+      width: '5.5rem',
       transition: { 
         type: "spring",
-        stiffness: 100,
-        damping: 20
+        stiffness: 200,
+        damping: 25
       }
     }
   };
 
   const contentVariants = {
     expanded: { 
-      paddingLeft: '16rem',
+      marginLeft: '18.5rem',
       transition: { 
         type: "spring",
-        stiffness: 100,
-        damping: 20
+        stiffness: 200,
+        damping: 25
       }
     },
     collapsed: { 
-      paddingLeft: '4rem',
+      marginLeft: '6.5rem',
       transition: { 
         type: "spring",
-        stiffness: 100,
-        damping: 20
+        stiffness: 200,
+        damping: 25
       }
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Sidebar */}
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+      {/* Floating Sidebar */}
       <motion.aside
         initial="expanded"
         animate={isSidebarCollapsed ? "collapsed" : "expanded"}
         variants={sidebarVariants}
-        className="fixed inset-y-0 left-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 overflow-x-hidden z-30"
+        className="fixed inset-y-4 left-4 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 z-30 flex flex-col overflow-hidden"
       >
-        <div className="flex flex-col h-full">
-          <div className="flex items-center h-16 px-4 border-b border-gray-200 dark:border-gray-700">
-            <AnimatePresence>
-              {!isSidebarCollapsed && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex-1"
-                >
-                  <Link to="/dashboard" className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                    HRlytics
-                  </Link>
-                </motion.div>
-              )}
-            </AnimatePresence>
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              {isSidebarCollapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
-            </motion.button>
-          </div>
-          
-          <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
-            {navigation.map((item, index) => {
-              const isActive = item.path === '/dashboard' 
-                ? location.pathname === '/dashboard'
-                : location.pathname.startsWith(item.path + '/') || location.pathname === item.path;
-              const isExpanded = expandedItem === item.name;
+        {/* Sidebar Header */}
+        <div className="h-16 flex items-center justify-between px-4">
+          <AnimatePresence mode="wait">
+            {!isSidebarCollapsed ? (
+              <motion.div
+                key="full-logo"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex-1"
+              >
+                <Link to="/dashboard" className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                  HRlytics
+                </Link>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="icon-logo"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex-1"
+              >
+                <Link to="/dashboard" className="flex items-center justify-center" title="HRlytics">
+                  <HRlyticsIcon />
+                </Link>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+            aria-label={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {isSidebarCollapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
+          </motion.button>
+        </div>
 
-              return (
-                <motion.div
-                  key={item.name}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  {item.subItems ? (
-                    <>
-                      <motion.button
-                        onClick={() => {
-                          if (isSidebarCollapsed) {
-                            // When sidebar is collapsed, clicking parent item navigates to first sub-item
-                            navigate(item.subItems[0].path);
-                          } else {
-                            setExpandedItem(isExpanded ? null : item.name);
-                          }
-                        }}
-                        className={`flex items-center w-full px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
-                          isActive
-                            ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400 shadow-sm'
-                            : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800'
-                        }`}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <item.icon className="w-5 h-5 min-w-[1.25rem]" />
-                        <AnimatePresence>
-                          {!isSidebarCollapsed && (
-                            <>
-                              <motion.span
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                className="ml-3 flex-1 text-left whitespace-nowrap"
-                              >
-                                {item.name}
-                              </motion.span>
-                              <motion.div
-                                animate={{ rotate: isExpanded ? 180 : 0 }}
-                                transition={{ duration: 0.2 }}
-                              >
-                                <ChevronDown className="w-4 h-4" />
-                              </motion.div>
-                            </>
-                          )}
-                        </AnimatePresence>
-                      </motion.button>
-                      <AnimatePresence>
-                        {!isSidebarCollapsed && isExpanded && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="ml-4 mt-2 space-y-1"
-                          >
-                            {item.subItems.map((subItem) => (
-                              <Link
-                                key={subItem.path}
-                                to={subItem.path}
-                                className={`flex items-center px-4 py-2 text-sm rounded-lg transition-colors ${
-                                  location.pathname === subItem.path
-                                    ? 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/30'
-                                    : 'text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800'
-                                }`}
-                              >
-                                {subItem.name}
-                              </Link>
-                            ))}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </>
-                  ) : (
+        {/* Navigation Divider */}
+        <div className="px-4 py-2">
+          <div className="h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
+        </div>
+
+        {/* Sidebar Navigation */}
+        <nav className="flex-1 px-3 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent">
+          {navigation.map((item, index) => {
+            const isActive = item.path === '/dashboard' 
+              ? location.pathname === '/dashboard'
+              : location.pathname.startsWith(item.path + '/') || location.pathname === item.path;
+            const isExpanded = expandedItem === item.name;
+
+            return (
+              <motion.div
+                key={item.name}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                {item.subItems ? (
+                  <>
                     <motion.button
-                      onClick={item.onClick || (() => navigate(item.path))}
-                      className={`flex items-center w-full px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
+                      onClick={() => {
+                        if (isSidebarCollapsed) {
+                          setIsSidebarCollapsed(false);
+                          setTimeout(() => setExpandedItem(item.name), 100);
+                        } else {
+                          setExpandedItem(isExpanded ? null : item.name);
+                        }
+                      }}
+                      className={`flex items-center w-full px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 ${
                         isActive
-                          ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400 shadow-sm'
+                          ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400'
                           : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800'
                       }`}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      title={item.name}
+                      title={isSidebarCollapsed ? item.name : undefined}
                     >
                       <item.icon className="w-5 h-5 min-w-[1.25rem]" />
                       <AnimatePresence>
                         {!isSidebarCollapsed && (
-                          <motion.span
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="ml-3 flex-1 text-left whitespace-nowrap"
-                          >
-                            {item.name}
-                          </motion.span>
+                          <>
+                            <motion.span
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              className="ml-3 flex-1 text-left whitespace-nowrap"
+                            >
+                              {item.name}
+                            </motion.span>
+                            <motion.div
+                              animate={{ rotate: isExpanded ? 180 : 0 }}
+                              transition={{ duration: 0.2 }}
+                            >
+                              <ChevronDown className="w-4 h-4" />
+                            </motion.div>
+                          </>
                         )}
                       </AnimatePresence>
                     </motion.button>
-                  )}
-                </motion.div>
-              );
-            })}
-          </nav>
+                    <AnimatePresence>
+                      {!isSidebarCollapsed && isExpanded && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="ml-4 mt-1 space-y-1"
+                        >
+                          {item.subItems.map((subItem) => (
+                            <Link
+                              key={subItem.path}
+                              to={subItem.path}
+                              className={`flex items-center px-3 py-2 text-sm rounded-xl transition-colors ${
+                                location.pathname === subItem.path
+                                  ? 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/30'
+                                  : 'text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800'
+                              }`}
+                            >
+                              {subItem.name}
+                            </Link>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </>
+                ) : (
+                  <motion.button
+                    onClick={item.onClick || (() => navigate(item.path))}
+                    className={`flex items-center w-full px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 ${
+                      isActive
+                        ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400'
+                        : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800'
+                    }`}
+                    title={isSidebarCollapsed ? item.name : undefined}
+                  >
+                    <item.icon className="w-5 h-5 min-w-[1.25rem]" />
+                    <AnimatePresence>
+                      {!isSidebarCollapsed && (
+                        <motion.span
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="ml-3 flex-1 text-left whitespace-nowrap"
+                        >
+                          {item.name}
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </motion.button>
+                )}
+              </motion.div>
+            );
+          })}
+        </nav>
 
-          {/* Sign Out Button */}
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+        {/* Navigation Divider */}
+        <div className="px-4 py-2">
+          <div className="h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
+        </div>
+
+        {/* Sidebar Footer */}
+        <div className="p-4">
+          <div className="flex items-center justify-between">
+            <ThemeToggle />
             <motion.button
               onClick={() => navigate('/')}
-              className="flex items-center w-full px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              className="flex items-center justify-center w-8 h-8 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              title="Sign Out"
             >
-              <LogOut className="w-5 h-5 min-w-[1.25rem]" />
-              <AnimatePresence>
-                {!isSidebarCollapsed && (
-                  <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="ml-3"
-                  >
-                    Sign Out
-                  </motion.span>
-                )}
-              </AnimatePresence>
+              <LogOut className="w-5 h-5" />
             </motion.button>
           </div>
         </div>
@@ -327,8 +358,9 @@ const Dashboard: React.FC = () => {
         initial="expanded"
         animate={isSidebarCollapsed ? "collapsed" : "expanded"}
         variants={contentVariants}
+        className="min-h-screen pt-4 pr-4 pb-4 transition-colors"
       >
-        <div className="p-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 min-h-screen shadow-xl border border-gray-100 dark:border-gray-700">
           {/* Top bar with date picker, filters, and profile */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -336,15 +368,9 @@ const Dashboard: React.FC = () => {
             transition={{ delay: 0.3 }}
             className="mb-6 flex items-center justify-between"
           >
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 lg:hidden"
-              >
-                <Menu className="w-5 h-5" />
-              </button>
+            <div className="flex items-center gap-4">
               {!isProfilePage && (
-                <div className="flex items-center gap-4">
+                <>
                   <DatePicker
                     selectedDate={selectedDate}
                     onSelect={setSelectedDate}
@@ -356,7 +382,7 @@ const Dashboard: React.FC = () => {
                     onChange={setSelectedFilters}
                     placeholder="Filter data"
                   />
-                </div>
+                </>
               )}
             </div>
 
@@ -367,7 +393,7 @@ const Dashboard: React.FC = () => {
             >
               <Link
                 to="/dashboard/profile"
-                className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 <img
                   src={userInfo.avatar}
@@ -385,19 +411,16 @@ const Dashboard: React.FC = () => {
               </Link>
             </motion.div>
           </motion.div>
+
           <Outlet />
         </div>
       </motion.main>
 
       {/* Chatbot */}
-      <Chatbot isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
-
-      {/* Bottom Right Controls */}
-      <div className="fixed bottom-4 right-4 flex flex-col items-end gap-4 z-40">
-        <ThemeToggle />
+      <div className="fixed bottom-4 right-4 z-40">
         <motion.button
           onClick={() => setIsChatOpen(!isChatOpen)}
-          className={`p-4 rounded-full shadow-lg flex items-center justify-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white ${
+          className={`p-4 rounded-full shadow-xl flex items-center justify-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white ${
             isChatOpen ? 'hidden' : 'flex'
           }`}
           whileHover={{ scale: 1.1 }}
@@ -406,6 +429,8 @@ const Dashboard: React.FC = () => {
           <MessageSquare className="w-6 h-6" />
         </motion.button>
       </div>
+
+      <Chatbot isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
     </div>
   );
 };

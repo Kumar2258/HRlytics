@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ArrowRight, Play } from 'lucide-react';
 import DashboardPreview from '../DashboardPreview';
+import VideoModal from '../common/VideoModal';
 
 interface HomeSectionProps {
   openModal: (type: 'signin' | 'signup') => void;
 }
 
 const HomeSection: React.FC<HomeSectionProps> = ({ openModal }) => {
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+
   return (
     <section id="home" className="min-h-screen flex items-center px-6 py-20">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
@@ -26,6 +29,7 @@ const HomeSection: React.FC<HomeSectionProps> = ({ openModal }) => {
               Get Started <ArrowRight className="inline w-5 h-5 ml-2" />
             </button>
             <button 
+              onClick={() => setIsVideoModalOpen(true)}
               className="border-2 border-white/30 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/10 transition-colors duration-300 flex items-center justify-center gap-2"
               aria-label="Watch Demo"
             >
@@ -39,6 +43,12 @@ const HomeSection: React.FC<HomeSectionProps> = ({ openModal }) => {
           <DashboardPreview />
         </div>
       </div>
+
+      {/* Video Modal */}
+      <VideoModal
+        isOpen={isVideoModalOpen}
+        onClose={() => setIsVideoModalOpen(false)}
+      />
     </section>
   );
 };
